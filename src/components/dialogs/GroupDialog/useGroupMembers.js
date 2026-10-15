@@ -112,10 +112,12 @@ export function useGroupMembers(groupDialog, { currentUser, applyGroupMember, ha
             isGroupMembersLoading.value = false;
             return;
         }
-        debounce(groupMembersSearchDebounced, 200)();
+        groupMembersSearchDebounced();
     }
 
-    function groupMembersSearchDebounced() {
+    const groupMembersSearchDebounced = debounce(groupMembersSearchDebouncedFn, 200);
+
+    function groupMembersSearchDebouncedFn() {
         const D = groupDialog.value;
         const search = D.memberSearch;
         D.memberSearchResults = [];
@@ -139,7 +141,7 @@ export function useGroupMembers(groupDialog, { currentUser, applyGroupMember, ha
                         }
                     });
                 }
-                if (D.id === args.params.groupId) {
+                if (D.id === args.params.groupId && D.memberSearch === search) {
                     D.memberSearchResults = args.json.results;
                 }
             })

@@ -180,14 +180,16 @@ export function useGroupModerationData(deps) {
             return;
         }
         isGroupMembersLoading.value = true;
-        debounce(groupMembersSearchDebounced, 200)();
+        groupMembersSearchDebounced();
     }
 
-    function groupMembersSearchDebounced() {
+    const groupMembersSearchDebounced = debounce(groupMembersSearchDebouncedFn, 200);
+
+    function groupMembersSearchDebouncedFn() {
         const groupId = groupMemberModeration.value.id;
         const search = memberSearch.value;
         tables.members.data = [];
-        if (memberSearch.value.length < 3) {
+        if (!search || search.length < 3) {
             return;
         }
         isGroupMembersLoading.value = true;
@@ -205,7 +207,7 @@ export function useGroupModerationData(deps) {
                         params: { groupId: args.params.groupId }
                     });
                 }
-                if (groupId === args.params.groupId) {
+                if (groupId === args.params.groupId && memberSearch.value === search) {
                     tables.members.data = args.json.results.map((member) => ({
                         ...member,
                         $selected: Boolean(selection.selectedUsers[member.userId])
